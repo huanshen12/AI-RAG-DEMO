@@ -24,11 +24,11 @@
 ├── requirements.txt       # 项目依赖包
 ├── .env                   # 环境变量 (存放 API Key)
 └── README.md              # 项目说明文档
-🚀 快速启动
+##🚀 快速启动
 1. 克隆项目
 Bash
 
-git clone [https://github.com/你的用户名/AI-RAG-DEMO.git](https://github.com/你的用户名/AI-RAG-DEMO.git)
+git clone [https://github.com/huanshen12/AI-RAG-DEMO.git](https://github.com/huanshen12/AI-RAG-DEMO.git)
 cd AI-RAG-DEMO
 2. 安装依赖
 Bash
