@@ -22,7 +22,7 @@ from langchain_core.documents import Document
 print("✅ 使用直接检索 + 生成的方式")
 
 
-def ask_document(file_path, query):
+def ask_document(file_path, query, api_key):
     """
     基于 PDF 文档回答问题
     """
@@ -44,7 +44,7 @@ def ask_document(file_path, query):
         # 使用 Gitee AI Embeddings
         try:
             embeddings = GiteeAIEmbeddings(
-                api_key=os.getenv("GITEE_AI_API_KEY"),
+                api_key=api_key,
                 model="Qwen3-Embedding-8B",
                 base_url="https://ai.gitee.com/v1"
             )
@@ -87,7 +87,7 @@ def ask_document(file_path, query):
             # 使用 Gitee AI 的大模型
             llm = ChatOpenAI(
                 base_url="https://ai.gitee.com/v1",
-                api_key=os.getenv("GITEE_AI_API_KEY"),
+                api_key=api_key,
                 model="DeepSeek-V3",
                 temperature=0.7
             )
