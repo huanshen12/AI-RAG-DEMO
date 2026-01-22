@@ -1,8 +1,8 @@
-langchain_community==0.4.1
-langchain_core==1.2.7
-langchain_openai==1.1.7
-langchain_text_splitters==1.1.0
-python-dotenv==1.2.1
-Requests==2.32.5
-streamlit==1.32.0
+langchain-community
+langchain-core
+langchain-openai
+langchain-text-splitters
+python-dotenv
+requests
+streamlit
 faiss-cpu
