@@ -42,7 +42,6 @@ pip install -r requirements.txt
 在项目根目录创建 .env 文件，填入你在 Gitee AI 申请的 API Key：
 
 ```Plaintext
-
 GITEE_AI_API_KEY=你的_Gitee_API_Key
 ```
 4. 运行应用
