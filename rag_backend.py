@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 # 加载环境变量
 load_dotenv()
 
-# 屏蔽烦人的警告
-warnings.filterwarnings("ignore")
 
 # --- 正确的导入方式 ---
 from langchain_community.document_loaders import PyPDFLoader
@@ -86,10 +84,10 @@ def ask_document(file_path, query, api_key):
         try:
             # 使用 Gitee AI 的大模型
             llm = ChatOpenAI(
-                base_url="https://ai.gitee.com/v1",
-                api_key=api_key,
-                model="DeepSeek-V3",
-                temperature=0.7
+                base_url=os.getenv("DEEPSEEK_BASE_URL"),
+                api_key=os.getenv("DEEPSEEK_API_KEY"),
+                model="ep-20251122233041-rpp9j",#DEEPSEEK-V3
+                temperature=0.1 
             )
             print("   大模型初始化成功")
         except Exception as e:
@@ -117,15 +115,16 @@ def ask_document(file_path, query, api_key):
         
         print("7. 生成回答...")
         try:
-            # 创建提示模板
+            # 创建提示模板，支持对话历史
             prompt = ChatPromptTemplate.from_template("""
-            你是一个智能文档问答助手，基于提供的文档内容回答用户问题。
+            你是一个智能文档问答助手，基于提供的文档内容和对话历史回答用户问题。
             
             请严格基于以下文档内容回答问题，不要添加任何超出文档的信息：
             
             {context}
             
-            用户问题：{query}
+            对话历史和用户最新问题：
+            {query}
             
             回答：
             """)

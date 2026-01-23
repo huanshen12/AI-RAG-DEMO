@@ -46,14 +46,27 @@ class GiteeAIEmbeddings(Embeddings):
         self.base_url = base_url.rstrip('/')
         self.model = model
         self.dimensions = dimensions
+        # 确保 API Key 是 ASCII 字符串
+        self.api_key = self.api_key.encode('ascii', 'ignore').decode('ascii')
+        
+        # 初始化默认请求头
         self.default_headers = default_headers or {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
         
-        # 确保 Authorization 头已设置
+        # 确保 Authorization 头已设置并是 ASCII 字符串
         if "Authorization" not in self.default_headers:
             self.default_headers["Authorization"] = f"Bearer {self.api_key}"
+        else:
+            # 确保 Authorization 头是 ASCII 字符串
+            auth_header = self.default_headers["Authorization"]
+            self.default_headers["Authorization"] = auth_header.encode('ascii', 'ignore').decode('ascii')
+        
+        # 确保所有请求头值都是 ASCII 字符串
+        for key, value in self.default_headers.items():
+            if isinstance(value, str):
+                self.default_headers[key] = value.encode('ascii', 'ignore').decode('ascii')
         
         print(f"🔧 GiteeAIEmbeddings 初始化成功")
         print(f"   模型: {self.model}")
