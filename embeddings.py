@@ -24,7 +24,7 @@ class GiteeAIEmbeddings(Embeddings):
         model: str = "Qwen3-Embedding-8B",
         dimensions: Optional[int] = None,
         default_headers: Optional[dict] = None,
-    ):
+    ):                                #所有参数初始化
         """
         初始化 GiteeAIEmbeddings
         
@@ -36,14 +36,14 @@ class GiteeAIEmbeddings(Embeddings):
             default_headers: 默认请求头
         """
         # 优先使用传入的 api_key，如果没有则从环境变量获取
-        self.api_key = api_key or os.getenv("GITEE_AI_API_KEY")
+        self.api_key = api_key or os.getenv("GITEE_AI_API_KEY")    #查看有无传入的apikey，若没有，则调用环境变量
         
         if not self.api_key:
             raise ValueError(
                 "需要设置 GITEE_AI_API_KEY 环境变量或传入 api_key 参数"
             )
         
-        self.base_url = base_url.rstrip('/')
+        self.base_url = base_url.rstrip('/')       #传入的url去掉末尾的“/”
         self.model = model
         self.dimensions = dimensions
         # 确保 API Key 是 ASCII 字符串

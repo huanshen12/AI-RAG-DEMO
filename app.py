@@ -2,11 +2,17 @@
 import streamlit as st
 import os
 import tempfile
+import requests
 from dotenv import load_dotenv
-from rag_backend import ask_document # 导入刚才写的后端函数
 
 # 加载环境变量
 load_dotenv()
+
+# 创建 temp 文件夹（如果不存在）
+temp_dir = os.path.join(os.getcwd(), "temp")
+if not os.path.exists(temp_dir):
+    os.makedirs(temp_dir)
+    print(f"创建了 temp 文件夹: {temp_dir}")
 
 # 设置页面配置
 st.set_page_config(
@@ -36,12 +42,14 @@ with st.sidebar:
     # 保存上传的文件
     if uploaded_file:
         if uploaded_file.name != st.session_state.uploaded_file_name:
-            # 保存为临时文件
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                tmp_file.write(uploaded_file.getvalue())
-                st.session_state.tmp_path = tmp_file.name
-                st.session_state.uploaded_file_name = uploaded_file.name
+            # 保存到 temp 文件夹
+            file_path = os.path.join(temp_dir, uploaded_file.name)
+            with open(file_path, "wb") as f:
+                f.write(uploaded_file.getvalue())
+            st.session_state.tmp_path = file_path
+            st.session_state.uploaded_file_name = uploaded_file.name
             st.success(f"✅ 成功上传文件：{uploaded_file.name}")
+            st.success(f"   保存路径：{file_path}")
     
     # API Key 设置
     st.header("2. API Key 设置")
@@ -105,8 +113,30 @@ if prompt := st.chat_input("关于这个文档，你想知道什么？"):
                 {prompt}
                 """
                 
-                # 调用后端函数
-                answer = ask_document(st.session_state.tmp_path, full_query, api_key)
+                # 调用 API
+                print("调用 API...")
+                api_url = "http://localhost:8000/chat"
+                payload = {
+                    "file_path": st.session_state.tmp_path,
+                    "query": full_query,
+                    "api_key": api_key
+                }
+                
+                # 发送 POST 请求
+                response = requests.post(api_url, json=payload)
+                print(f"API 响应状态码: {response.status_code}")
+                
+                # 解析响应
+                result = response.json()
+                print(f"API 响应: {result}")
+                
+                # 获取回答
+                if "answer" in result:
+                    answer = result["answer"]
+                elif "error" in result:
+                    answer = f"❌ 错误: {result['error']}"
+                else:
+                    answer = "❌ 未知错误: API 返回格式不正确"
                 
                 # 更新消息
                 message_placeholder.markdown(answer)
