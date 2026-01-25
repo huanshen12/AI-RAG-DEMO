@@ -1,5 +1,3 @@
-# 🤖 AI-RAG-Demo (基于 Gitee AI 的文档问答助手)
-
 # 📚 RAG-Knowledge-Engine (基于微服务架构的文档问答引擎)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
