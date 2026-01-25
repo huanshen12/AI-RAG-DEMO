@@ -1,8 +1,12 @@
-langchain-community
-langchain-core
-langchain-openai
-langchain-text-splitters
+fastapi
+langchain_community
+langchain_core
+langchain_openai
+langchain_text_splitters
+pydantic
 python-dotenv
-requests
+Requests
 streamlit
+uvicorn
 faiss-cpu
+tiktoken

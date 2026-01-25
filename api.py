@@ -56,6 +56,25 @@ def chat(request: ChatRequest):
         # 处理异常
         return {"error": str(e)}
 
+# 导入 ask_document_stream 和 StreamingResponse
+from rag_backend import ask_document_stream
+from fastapi.responses import StreamingResponse
+
+# 定义 /chat/stream 路径的 POST 请求处理
+@app.post("/chat/stream")
+def chat_stream(request: ChatRequest):
+    """
+    基于 PDF 文档回答问题 (流式响应)
+    """
+    return StreamingResponse(
+        ask_document_stream(
+            file_path=request.file_path,
+            query=request.query,
+            api_key=request.api_key
+        ),
+        media_type="text/plain"
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

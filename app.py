@@ -114,35 +114,40 @@ if prompt := st.chat_input("关于这个文档，你想知道什么？"):
                 """
                 
                 # 调用 API
-                print("调用 API...")
-                api_url = "http://localhost:8000/chat"
+                # 调用 Streaming API
+                print("调用 Streaming API...")
+                api_url = "http://localhost:8000/chat/stream"
                 payload = {
                     "file_path": st.session_state.tmp_path,
                     "query": full_query,
                     "api_key": api_key
                 }
                 
-                # 发送 POST 请求
-                response = requests.post(api_url, json=payload)
-                print(f"API 响应状态码: {response.status_code}")
+                # 发送 POST 请求 (开启 stream=True)
+                response = requests.post(api_url, json=payload, stream=True)
                 
-                # 解析响应
-                result = response.json()
-                print(f"API 响应: {result}")
-                
-                # 获取回答
-                if "answer" in result:
-                    answer = result["answer"]
-                elif "error" in result:
-                    answer = f"❌ 错误: {result['error']}"
+                if response.status_code == 200:
+                    # 初始化空字符串用于累积回答
+                    full_response = ""
+                    # 清空"正在思考中"
+                    message_placeholder.markdown("")
+                    
+                    # 迭代读取响应流
+                    for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+                        if chunk:
+                            full_response += chunk
+                            # 实时更新 UI，加一个闪烁的光标效果
+                            message_placeholder.markdown(full_response + "▌")
+                    
+                    # 移除光标，显示最终结果
+                    message_placeholder.markdown(full_response)
+                    
+                    # 添加 AI 回答到聊天历史
+                    st.session_state.messages.append({"role": "assistant", "content": full_response})
                 else:
-                    answer = "❌ 未知错误: API 返回格式不正确"
-                
-                # 更新消息
-                message_placeholder.markdown(answer)
-                
-                # 添加 AI 回答到聊天历史
-                st.session_state.messages.append({"role": "assistant", "content": answer})
+                    error_msg = f"❌ API 请求失败: {response.status_code} - {response.text}"
+                    message_placeholder.markdown(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
                 
             except Exception as e:
                 error_msg = f"❌ 出错啦：{str(e)}"
